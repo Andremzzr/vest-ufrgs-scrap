@@ -6,11 +6,8 @@ BASE_URL = 'https://www1.ufrgs.br/PortalEnsino/graduacaoprocessoseletivo/Divulga
 SISU = 'S'
 VESTIBULAR = 1
 
-# URL of the endpoint
-url = f"{BASE_URL}/carregaCursos"
 
-
-def getData(url, form_data): 
+def get_data(url, form_data): 
     options_dict = {}
     response = requests.post(url, data=form_data)
 
@@ -30,21 +27,35 @@ def getData(url, form_data):
     return options_dict
         
 
+def get_courses_data():
+    url = f"{BASE_URL}/carregaCursos"
+    years = list(range(2016, 2025))
+    data = {}
 
-years = list(range(2016, 2025))
-all_data = {}
+    for year in years:
+        form_vest = {
+            "anoSelecao": year,
+            "sequenciaSelecao": VESTIBULAR,
+        }
 
-for year in years:
-    print(year)
-    form_data = {
-        "anoSelecao": year,
-        "sequenciaSelecao": 1,
-    }
+        form_sisu = {
+            "anoSelecao": year,
+            "sequenciaSelecao": SISU,
+        }
 
-    data = getData(url, form_data)
-    all_data[year] = data
-    print(all_data)
+        vest_data = get_data(url, form_vest)
+        sisu_data = get_data(url, form_sisu)
 
-with open("data/cursos.json", "w") as out:
-        json.dump(all_data, out)
+        data.setdefault(year, {})['vest'] = vest_data
+        data[year]['sisu'] = sisu_data
+        print(year)
+    
+    return data
 
+
+def load_courses_data():
+    data = get_courses_data()
+    with open("data/courses.json", "w") as out:
+            json.dump(data, out)
+
+load_courses_data()
