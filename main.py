@@ -73,7 +73,6 @@ def get_candidates_data(year, type ,course_code):
 
     if response.status_code == 200:
         print(form_data)
-        print(response.text)
         tables = pd.read_html(response.text)
                 
         if tables:
@@ -105,3 +104,6 @@ for year in data.keys():
             year_json.setdefault(year, {})[course_code] = candidates
             print(candidates)
             time.sleep(5)
+
+with open("data/candidates.json", "w") as out:
+    json.dump(year_json, out)
