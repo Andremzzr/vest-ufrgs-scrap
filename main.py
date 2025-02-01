@@ -69,6 +69,7 @@ def get_candidates_data(year, type ,course_code):
         'sequenciaSelecao': type,
         'codListaSelecao': course_code
     }
+
     response = get_data(url,form_data)
 
     if response.status_code == 200:
@@ -82,6 +83,8 @@ def get_candidates_data(year, type ,course_code):
                 'type': type,
                 'data': df.to_dict(orient="records")
             }
+    
+    return {}
 
 
 def load_courses_data():
