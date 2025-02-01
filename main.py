@@ -81,7 +81,7 @@ def get_candidates_data(year, type ,course_code):
             return {
                 'year': year,
                 'type': type,
-                'data': df.to_dict()
+                'data': df.to_dict(orient="records")
             }
 
 
