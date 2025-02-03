@@ -4,6 +4,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from io import StringIO
 import time
+import os
 
 BASE_URL = 'https://www1.ufrgs.br/PortalEnsino/graduacaoprocessoseletivo/DivulgacaoDadosChamamento'
 SISU = 'S'
@@ -124,9 +125,27 @@ file_path = "data/courses.json"
 with open(file_path, 'r') as file:
     json_file_data = json.load(file)
 
+JSON_FILE_PATH = "data/candidates.json"
+
+def get_candidates_file():
+    # Load existing data or create an empty list if the file doesn't exist
+    if os.path.exists(JSON_FILE_PATH):
+        with open(JSON_FILE_PATH, "r") as f:
+            try:
+                return json.load(f)
+            except json.JSONDecodeError:
+                return []  
+            
+    return []
+
+all_candidates = get_candidates_file()
+
 for course_data in json_file_data['data']:
     print(course_data['year'], course_data['course_name'])
     candidates_data = get_candidates_data(course_data['year'], types_dict[course_data['type']], course_data['course_code'])
 
-    with open("data/candidates.json", "w") as out:
-        json.dump(candidates_data, out)
+    if candidates_data:
+        all_candidates.append(candidates_data)
+    # Save updated list back to the file
+    with open(JSON_FILE_PATH, "w") as out:
+        json.dump(all_candidates, out, indent=4)
