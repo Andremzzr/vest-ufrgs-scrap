@@ -8,21 +8,33 @@ import time
 BASE_URL = 'https://www1.ufrgs.br/PortalEnsino/graduacaoprocessoseletivo/DivulgacaoDadosChamamento'
 SISU = 'S'
 VESTIBULAR = 1
+MAX_RETRIES = 3
 
 types_dict = {
     'vest': VESTIBULAR,
     'sisu': SISU
 }
 
+def get_data(url, form_data, retries=MAX_RETRIES, backoff_factor=2):
+    for attempt in range(retries):
+        try:
+            response = requests.post(url, data=form_data, timeout=10)
+            if response.status_code == 200:
+                return response
+            else:
+                print(f"Attempt {attempt+1}/{retries}: Received status {response.status_code}. Retrying...")
+        except requests.RequestException as e:
+            print(f"Attempt {attempt+1}/{retries}: Request failed due to {e}. Retrying...")
 
-def get_data(url, form_data):
-    return requests.post(url, data=form_data)
+        time.sleep(backoff_factor ** attempt)  
 
+    return None 
+ 
 def get_courses_from_html(url, form_data): 
     options_dict = {}
     response = get_data(url, form_data)
 
-    if response.status_code == 200:
+    if response:
         soup = BeautifulSoup(response.text, "html.parser")
         select_element = soup.find(id="selectCurso")
 
@@ -84,13 +96,12 @@ def get_candidates_data(year, type ,course_code):
         'sequenciaSelecao': type,
         'codListaSelecao': course_code
     }
-
+    
+    print(form_data)
     response = get_data(url,form_data)
 
-    if response.status_code == 200:
-        print(form_data)
+    if response:
         tables = pd.read_html(StringIO(response.text))
-                
         if tables:
             df = tables[0]
             return {
@@ -107,16 +118,15 @@ def load_courses_data():
     with open("data/courses.json", "w") as out:
             json.dump(data, out)
 
-load_courses_data()
 file_path = "data/courses.json"
 
-# # Load JSON data from the file
-# with open(file_path, 'r') as file:
-#     json_file_data = json.load(file)
+# Load JSON data from the file
+with open(file_path, 'r') as file:
+    json_file_data = json.load(file)
 
-# for course_data in json_file_data['data']:
-#     candidates_data = get_candidates_data(course_data['year'], types_dict[course_data['type']], )
+for course_data in json_file_data['data']:
+    print(course_data['year'], course_data['course_name'])
+    candidates_data = get_candidates_data(course_data['year'], types_dict[course_data['type']], course_data['course_code'])
 
-
-# with open("data/candidates.json", "w") as out:
-#     json.dump(year_json, out)
+    with open("data/candidates.json", "w") as out:
+        json.dump(candidates_data, out)
