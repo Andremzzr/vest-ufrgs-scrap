@@ -61,14 +61,16 @@ def get_courses_data():
             data['data'].append({
                 'year': year,
                 'type': 'vest',
-                key: vest_data[key] 
+                'course_code': key,
+                'course_name': vest_data[key] 
             })
         
         for key in sisu_data.keys():
             data['data'].append({
                 'year': year,
                 'type': 'sisu',
-                key: sisu_data[key] 
+                'course_code': key,
+                'course_name': sisu_data[key] 
         })
 
         print(year)
@@ -94,7 +96,7 @@ def get_candidates_data(year, type ,course_code):
             return {
                 'year': year,
                 'type': type,
-                'data': df.to_dict(orient="records")
+                'data_table': df.to_dict(orient="records")
             }
     
     return {}
@@ -105,21 +107,16 @@ def load_courses_data():
     with open("data/courses.json", "w") as out:
             json.dump(data, out)
 
-
 load_courses_data()
-# file_path = "data/courses.json"
+file_path = "data/courses.json"
 
 # # Load JSON data from the file
 # with open(file_path, 'r') as file:
-#     data = json.load(file)
+#     json_file_data = json.load(file)
 
-# for year in data.keys():
-#     year_json = {}
-#     for type in data[year].keys():
-#         for course_code in data[year][type].keys():
-#             candidates = get_candidates_data(year, types_dict[type], course_code)
-#             year_json.setdefault(year, {})[course_code] = candidates
-#             time.sleep(5)
+# for course_data in json_file_data['data']:
+#     candidates_data = get_candidates_data(course_data['year'], types_dict[course_data['type']], )
+
 
 # with open("data/candidates.json", "w") as out:
 #     json.dump(year_json, out)
