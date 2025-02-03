@@ -40,8 +40,8 @@ def get_courses_from_html(url, form_data):
 
 def get_courses_data():
     url = f"{BASE_URL}/carregaCursos"
-    years = list(range(2016, 2025))
-    data = {}
+    years = list(range(2016, 2026))
+    data = {'data': []}
 
     for year in years:
         form_vest = {
@@ -54,11 +54,23 @@ def get_courses_data():
             "sequenciaSelecao": SISU,
         }
 
-        vest_data = get_data(url, form_vest)
-        sisu_data = get_data(url, form_sisu)
+        vest_data = get_courses_from_html(url, form_vest)
+        sisu_data = get_courses_from_html(url, form_sisu)
 
-        data.setdefault(year, {})['vest'] = vest_data
-        data[year]['sisu'] = sisu_data
+        for key in vest_data.keys():
+            data['data'].append({
+                'year': year,
+                'type': 'vest',
+                key: vest_data[key] 
+            })
+        
+        for key in sisu_data.keys():
+            data['data'].append({
+                'year': year,
+                'type': 'sisu',
+                key: sisu_data[key] 
+        })
+
         print(year)
     
     return data
@@ -93,21 +105,21 @@ def load_courses_data():
     with open("data/courses.json", "w") as out:
             json.dump(data, out)
 
-file_path = "data/courses.json"
 
-# Load JSON data from the file
-with open(file_path, 'r') as file:
-    data = json.load(file)
+load_courses_data()
+# file_path = "data/courses.json"
 
-for year in data.keys():
-    year_json = {}
-    # courses = sum([list(data[year][type].keys()) for type in data[year].keys()], [])
-    for type in data[year].keys():
-        for course_code in data[year][type].keys():
-            candidates = get_candidates_data(year, types_dict[type], course_code)
-            year_json.setdefault(year, {})[course_code] = candidates
-            print(candidates)
-            time.sleep(5)
+# # Load JSON data from the file
+# with open(file_path, 'r') as file:
+#     data = json.load(file)
 
-with open("data/candidates.json", "w") as out:
-    json.dump(year_json, out)
+# for year in data.keys():
+#     year_json = {}
+#     for type in data[year].keys():
+#         for course_code in data[year][type].keys():
+#             candidates = get_candidates_data(year, types_dict[type], course_code)
+#             year_json.setdefault(year, {})[course_code] = candidates
+#             time.sleep(5)
+
+# with open("data/candidates.json", "w") as out:
+#     json.dump(year_json, out)
