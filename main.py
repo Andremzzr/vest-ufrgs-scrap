@@ -2,6 +2,7 @@ import requests
 import json
 import pandas as pd
 from bs4 import BeautifulSoup
+from io import StringIO
 import time
 
 BASE_URL = 'https://www1.ufrgs.br/PortalEnsino/graduacaoprocessoseletivo/DivulgacaoDadosChamamento'
@@ -74,7 +75,7 @@ def get_candidates_data(year, type ,course_code):
 
     if response.status_code == 200:
         print(form_data)
-        tables = pd.read_html(response.text)
+        tables = pd.read_html(StringIO(response.text))
                 
         if tables:
             df = tables[0]
