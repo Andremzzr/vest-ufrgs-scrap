@@ -105,6 +105,9 @@ def get_candidates_data(year, type ,course_code):
         tables = pd.read_html(StringIO(response.text))
         if tables:
             df = tables[0]
+
+            df.drop(['Nr Inscrição', 'Candidato'], axis=1, inplace=True)
+
             return {
                 'year': year,
                 'type': type,
