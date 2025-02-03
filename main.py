@@ -149,3 +149,4 @@ for course_data in json_file_data['data']:
     # Save updated list back to the file
     with open(JSON_FILE_PATH, "w") as out:
         json.dump(all_candidates, out, indent=4)
+    time.sleep(5)
