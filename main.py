@@ -5,18 +5,21 @@ from bs4 import BeautifulSoup
 from io import StringIO
 import time
 import os
+from database_service import DatabaseService
 
 BASE_URL = 'https://www1.ufrgs.br/PortalEnsino/graduacaoprocessoseletivo/DivulgacaoDadosChamamento'
 SISU = 'S'
 VESTIBULAR = 1
 MAX_RETRIES = 3
 
+database_service = DatabaseService();
+
 types_dict = {
     'vest': VESTIBULAR,
     'sisu': SISU
 }
 
-def get_data(url, form_data, retries=MAX_RETRIES, backoff_factor=2):
+def get_data(url, form_data, retries=MAX_RETRIES, backoff_factor=4):
     for attempt in range(retries):
         try:
             response = requests.post(url, data=form_data, timeout=10)
@@ -107,7 +110,7 @@ def get_candidates_data(year, type ,course_code):
             df = tables[0]
 
             df.drop(['Nr Inscrição', 'Candidato'], axis=1, inplace=True)
-
+            print(df.iloc[0])
             return {
                 'year': year,
                 'type': type,
@@ -141,15 +144,10 @@ def get_candidates_file():
             
     return []
 
-all_candidates = get_candidates_file()
+# all_candidates = get_candidates_file()
 
-for course_data in json_file_data['data']:
-    print(course_data['year'], course_data['course_name'])
-    candidates_data = get_candidates_data(course_data['year'], types_dict[course_data['type']], course_data['course_code'])
-
-    if candidates_data:
-        all_candidates.append(candidates_data)
-    # Save updated list back to the file
-    with open(JSON_FILE_PATH, "w") as out:
-        json.dump(all_candidates, out, indent=4)
-    time.sleep(5)
+# for course_data in json_file_data['data']:
+#     print(course_data['year'], course_data['course_name'])
+#     candidates_data = get_candidates_data(course_data['year'], types_dict[course_data['type']], course_data['course_code'])
+#     print(candidates_data['data_table'])
+#     break
