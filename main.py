@@ -1,18 +1,16 @@
 import requests
-import json
 import pandas as pd
 from bs4 import BeautifulSoup
 from io import StringIO
 import time
-import os
-from database_service import DatabaseService
+# from database_service import DatabaseService
 
 BASE_URL = 'https://www1.ufrgs.br/PortalEnsino/graduacaoprocessoseletivo/DivulgacaoDadosChamamento'
 SISU = 'S'
 VESTIBULAR = 1
 MAX_RETRIES = 3
 
-database_service = DatabaseService();
+# database_service = DatabaseService();
 
 types_dict = {
     'vest': VESTIBULAR,
@@ -88,12 +86,10 @@ def get_courses_data():
                 'course_code': key,
                 'course_name': sisu_data[key] 
         })
-
-        print(year)
     
     return data
 
-def get_candidates_data(year, type ,course_code):
+def get_candidates_data(year, type , course_code):
     url = f"{BASE_URL}/carregaDadosDivulgacao"
     form_data = {
         'anoSelecao': year,
@@ -119,35 +115,8 @@ def get_candidates_data(year, type ,course_code):
     
     return {}
 
+courses_data = get_courses_data()
 
-def load_courses_data():
-    data = get_courses_data()
-    with open("data/courses.json", "w") as out:
-            json.dump(data, out)
-
-file_path = "data/courses.json"
-
-# Load JSON data from the file
-with open(file_path, 'r') as file:
-    json_file_data = json.load(file)
-
-JSON_FILE_PATH = "data/candidates.json"
-
-def get_candidates_file():
-    # Load existing data or create an empty list if the file doesn't exist
-    if os.path.exists(JSON_FILE_PATH):
-        with open(JSON_FILE_PATH, "r") as f:
-            try:
-                return json.load(f)
-            except json.JSONDecodeError:
-                return []  
-            
-    return []
-
-# all_candidates = get_candidates_file()
-
-# for course_data in json_file_data['data']:
-#     print(course_data['year'], course_data['course_name'])
-#     candidates_data = get_candidates_data(course_data['year'], types_dict[course_data['type']], course_data['course_code'])
-#     print(candidates_data['data_table'])
-#     break
+for course_data in courses_data['data']:
+    type = types_dict[course_data['type']]
+    candidate_data = get_candidates_data(course_data['year'], type, course_data['course_code'])

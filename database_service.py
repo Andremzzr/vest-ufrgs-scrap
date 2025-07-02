@@ -6,6 +6,10 @@ class DatabaseService:
         self.connection = psycopg2.connect(database="database", user="user", password="pass", host="localhost", port=5432);
         self.cursor = self.connection.cursor()
 
+    def close_connection(self):
+        self.cursor.close()
+        
+
     def insert_candidates(self, values):
         query = """
            INSERT INTO candidates
@@ -19,7 +23,10 @@ class DatabaseService:
         except psycopg2.Error as e:
             print(f"An error occurred: {e}")
             self.connection.rollback()
-        finally:
-            self.cursor.close()
-            self.connection.close()
+
+    def insert_batch(self, candidates_batch):
+        for data in candidates_batch:
+            self.insert_candidates(data)
+        self.close_connection()
+            
 
