@@ -10,8 +10,6 @@ SISU = 'S'
 VESTIBULAR = 1
 MAX_RETRIES = 3
 
-# database_service = DatabaseService();
-
 types_dict = {
     'vest': VESTIBULAR,
     'sisu': SISU
@@ -97,7 +95,7 @@ def get_candidates_data(year, type , course_code):
         'codListaSelecao': course_code
     }
     
-    print(form_data)
+    print(f"Form Data: {form_data}")
     response = get_data(url,form_data)
 
     if response:
@@ -105,8 +103,10 @@ def get_candidates_data(year, type , course_code):
         if tables:
             df = tables[0]
 
-            df.drop(['Nr Inscrição', 'Candidato'], axis=1, inplace=True)
-            print(df.iloc[0])
+            df.drop(['Nr Inscrição', 'Candidato', 'Classificação'], axis=1, inplace=True)
+
+            df = df[df["Situação"].isin(['Matriculado', 'Lotado em vaga', 'Renunciante', 'Matrícula Provisória'])]
+
             return {
                 'year': year,
                 'type': type,
@@ -120,3 +120,5 @@ courses_data = get_courses_data()
 for course_data in courses_data['data']:
     type = types_dict[course_data['type']]
     candidate_data = get_candidates_data(course_data['year'], type, course_data['course_code'])
+    print(candidate_data["data_table"][:2])
+    break

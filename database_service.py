@@ -9,11 +9,10 @@ class DatabaseService:
     def close_connection(self):
         self.cursor.close()
         
-
     def insert_candidates(self, values):
         query = """
            INSERT INTO candidates
-           (classification, score, concurrence_type, period, enter_type, status, date)
+           (course_name, year, classification, score, concurrence_type, period, enter_type, status, date)
            VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
         try:
