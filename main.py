@@ -139,8 +139,8 @@ if __name__ == "__main__":
     else: 
         courses_data = get_courses_data()["data"]
 
-    for course_data in courses_data:
+    for course_data in courses_data :
         type = types_dict[course_data['type']]
         candidate_data = get_candidates_data(course_data['year'], type, course_data['course_code'])
         print(candidate_data["data_table"][:2])
-        break
+        
