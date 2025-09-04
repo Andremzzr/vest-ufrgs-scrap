@@ -1,9 +1,12 @@
 import requests
 import pandas as pd
-from bs4 import BeautifulSoup
-from io import StringIO
 import json
 import time
+import sys
+
+from bs4 import BeautifulSoup
+from io import StringIO
+
 # from database_service import DatabaseService
 
 BASE_URL = 'https://www1.ufrgs.br/PortalEnsino/graduacaoprocessoseletivo/DivulgacaoDadosChamamento'
@@ -129,9 +132,15 @@ def get_candidates_data(year, type , course_code):
     
     return {}
 
-courses_data = get_courses_data()
-for course_data in courses_data['data']:
-    type = types_dict[course_data['type']]
-    candidate_data = get_candidates_data(course_data['year'], type, course_data['course_code'])
-    print(candidate_data["data_table"][:2])
-    break
+if __name__ == "__main__":
+    command = int(sys.argv[1])
+    if command: 
+        courses_data = [x for x in  get_courses_data()["data"] if x["year"] == command]
+    else: 
+        courses_data = get_courses_data()["data"]
+
+    for course_data in courses_data:
+        type = types_dict[course_data['type']]
+        candidate_data = get_candidates_data(course_data['year'], type, course_data['course_code'])
+        print(candidate_data["data_table"][:2])
+        break
