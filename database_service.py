@@ -1,9 +1,19 @@
+from dotenv import load_dotenv
 import psycopg2
+import os
+
+load_dotenv()
 
 class DatabaseService: 
 
     def __init__(self):
-        self.connection = psycopg2.connect(database="database", user="user", password="pass", host="localhost", port=5432);
+        self.connection = psycopg2.connect(
+            dbname=os.getenv("DB_NAME"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT")
+        )
         self.cursor = self.connection.cursor()
 
     def close_connection(self):
@@ -24,8 +34,21 @@ class DatabaseService:
             self.connection.rollback()
 
     def insert_batch(self, candidates_batch):
-        for data in candidates_batch:
-            self.insert_candidates(data)
-        self.close_connection()
+        query = """
+            INSERT INTO candidates
+            (course_name, year, classification, score, concurrence_type, period, enter_type, status, date)
+            VALUES (%(course_name)s, %(year)s, %(classification)s, %(score)s, 
+                    %(concurrence_type)s, %(period)s, %(enter_type)s, %(status)s, %(date)s)
+        """
+        try:
+            self.cursor.executemany(query, candidates_batch)
+            self.connection.commit()
+            print(f"{len(candidates_batch)} candidates inserted successfully.")
+        except psycopg2.Error as e:
+            print(f"An error occurred during batch insert: {e}")
+            self.connection.rollback()
+
+
+
             
 

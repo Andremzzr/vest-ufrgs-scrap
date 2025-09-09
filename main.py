@@ -7,18 +7,31 @@ import sys
 from bs4 import BeautifulSoup
 from io import StringIO
 
-# from database_service import DatabaseService
+from database_service import DatabaseService
 
 BASE_URL = 'https://www1.ufrgs.br/PortalEnsino/graduacaoprocessoseletivo/DivulgacaoDadosChamamento'
 DATA_JSON_FILE = 'output.json'
 SISU = 'S'
 VESTIBULAR = 1
-MAX_RETRIES = 3
+MAX_RETRIES = 5
 
 types_dict = {
     'vest': VESTIBULAR,
     'sisu': SISU
 }
+
+KEY_MAP = {
+    'Classificação': 'classification',
+    'Média': 'score',
+    'Vaga(s) de Concorrência': 'concurrence_type',
+    'Período Vaga': 'period',
+    'Vaga de Ingresso': 'enter_type',
+    'Situação': 'status',
+    'Data Situação': 'date'
+}
+
+db_service = DatabaseService()
+
 
 def get_data(url, form_data, retries=MAX_RETRIES, backoff_factor=4):
     for attempt in range(retries):
@@ -120,10 +133,13 @@ def get_candidates_data(year, type , course_code):
         if tables:
             df = tables[0]
 
-            df.drop(['Nr Inscrição', 'Candidato', 'Classificação'], axis=1, inplace=True)
+            df.drop(['Nr Inscrição', 'Candidato'], axis=1, inplace=True)
 
             df = df[df["Situação"].isin(['Matriculado', 'Lotado em vaga', 'Renunciante', 'Matrícula Provisória'])]
-
+            
+            # date formating
+            df['Data Situação'] = pd.to_datetime(df['Data Situação'], dayfirst=True, errors='coerce')
+            df['Data Situação'] = df['Data Situação'].dt.strftime('%Y-%m-%d')
             return {
                 'year': year,
                 'type': type,
@@ -139,8 +155,23 @@ if __name__ == "__main__":
     else: 
         courses_data = get_courses_data()["data"]
 
+    total_reqs = len(courses_data)
+    req_count = 1
     for course_data in courses_data :
         type = types_dict[course_data['type']]
-        candidate_data = get_candidates_data(course_data['year'], type, course_data['course_code'])
-        print(candidate_data["data_table"][:2])
+        year = course_data["year"]
+        course_name = course_data["course_name"]
+
+        
+        candidate_data = get_candidates_data(year, type, course_data['course_code'])
+        candidates_data_translated = translated = [
+            {**{KEY_MAP.get(k, k): v for k, v in item.items()},
+            "year": year,
+            "course_name": course_name}
+            for item in candidate_data["data_table"]
+        ]
+
+        db_service.insert_batch(candidates_data_translated)
+        print(f"Total requests {req_count}/{total_reqs}")
+        req_count+=1
         
