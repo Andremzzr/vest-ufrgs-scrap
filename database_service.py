@@ -26,6 +26,7 @@ class DatabaseService:
             CREATE TABLE IF NOT EXISTS public.candidates (
             id bigserial NOT NULL,
             course_name varchar(255) NULL,
+            exam_type varchar(4) NOT NULL,
             "year" int4 NULL,
             classification int4 NULL,
             score numeric(6, 2) NULL,

@@ -167,7 +167,8 @@ if __name__ == "__main__":
         candidates_data_translated = translated = [
             {**{KEY_MAP.get(k, k): v for k, v in item.items()},
             "year": year,
-            "course_name": course_name}
+            "course_name": course_name,
+            "exam_type": course_data["type"] }
             for item in candidate_data["data_table"]
         ]
 
