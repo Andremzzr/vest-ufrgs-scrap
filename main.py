@@ -1,19 +1,17 @@
-import requests
-import pandas as pd
 import json
-import time
 import sys
 
+import pandas as pd
 from bs4 import BeautifulSoup
 from io import StringIO
 
-from database_service import DatabaseService
+from services.database_service import DatabaseService
+from services.api_wrapper import get_data
 
 BASE_URL = 'https://www1.ufrgs.br/PortalEnsino/graduacaoprocessoseletivo/DivulgacaoDadosChamamento'
 DATA_JSON_FILE = 'output.json'
 SISU = 'S'
 VESTIBULAR = 1
-MAX_RETRIES = 5
 
 types_dict = {
     'vest': VESTIBULAR,
@@ -33,21 +31,7 @@ KEY_MAP = {
 db_service = DatabaseService()
 
 
-def get_data(url, form_data, retries=MAX_RETRIES, backoff_factor=4):
-    for attempt in range(retries):
-        try:
-            response = requests.post(url, data=form_data, timeout=10)
-            if response.status_code == 200:
-                return response
-            else:
-                print(f"Attempt {attempt+1}/{retries}: Received status {response.status_code}. Retrying...")
-        except requests.RequestException as e:
-            print(f"Attempt {attempt+1}/{retries}: Request failed due to {e}. Retrying...")
 
-        time.sleep(backoff_factor ** attempt)  
-
-    return None 
- 
 def get_courses_from_html(url, form_data): 
     options_dict = {}
     response = get_data(url, form_data)
