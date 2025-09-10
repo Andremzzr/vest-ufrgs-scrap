@@ -138,8 +138,11 @@ def get_candidates_data(year, type , course_code):
             df = df[df["Situação"].isin(['Matriculado', 'Lotado em vaga', 'Renunciante', 'Matrícula Provisória'])]
             
             # date formating
-            df['Data Situação'] = pd.to_datetime(df['Data Situação'], dayfirst=True, errors='coerce')
-            df['Data Situação'] = df['Data Situação'].dt.strftime('%Y-%m-%d')
+            df.loc[:, 'Data Situação'] = (
+                pd.to_datetime(df['Data Situação'], dayfirst=True, errors='coerce')
+                .dt.strftime('%Y-%m-%d')
+            )   
+
             return {
                 'year': year,
                 'type': type,
