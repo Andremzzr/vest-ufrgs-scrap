@@ -4,6 +4,7 @@ import os
 
 load_dotenv()
 
+
 class DatabaseService: 
 
     def __init__(self):
@@ -15,15 +16,41 @@ class DatabaseService:
             port=os.getenv("DB_PORT")
         )
         self.cursor = self.connection.cursor()
+        self.start()
 
     def close_connection(self):
         self.cursor.close()
-        
+
+    def start(self): 
+        query = """ 
+            CREATE TABLE IF NOT EXISTS public.candidates (
+            id bigserial NOT NULL,
+            course_name varchar(255) NULL,
+            "year" int4 NULL,
+            classification int4 NULL,
+            score numeric(6, 2) NULL,
+            concurrence_type varchar(50) NULL,
+            "period" varchar(10) NULL,
+            enter_type varchar(50) NULL,
+            status varchar(50) NULL,
+            "date" date NULL,
+            created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+            updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
+            CONSTRAINT candidates_pkey PRIMARY KEY (id)
+        );
+        """
+        try: 
+            self.cursor.execute(query)
+            self.connection.commit()
+        except psycopg2.Error as e:
+            print(f"An error occurred: {e}")
+            self.connection.rollback()
+            
     def insert_candidates(self, values):
         query = """
-           INSERT INTO candidates
-           (course_name, year, classification, score, concurrence_type, period, enter_type, status, date)
-           VALUES (%s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO candidates
+            (course_name, year, classification, score, concurrence_type, period, enter_type, status, date)
+            VALUES (%s, %s, %s, %s, %s, %s, %s)
         """
         try:
             self.cursor.execute(query, values)
