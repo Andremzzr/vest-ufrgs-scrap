@@ -37,7 +37,8 @@ class DatabaseService:
             "date" date NULL,
             created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
             updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
-            CONSTRAINT candidates_pkey PRIMARY KEY (id)
+            CONSTRAINT candidates_pkey PRIMARY KEY (id),
+            CONSTRAINT candidate_course_year UNIQUE (classification, year, course_name);
         );
         """
         try: 
@@ -64,9 +65,9 @@ class DatabaseService:
     def insert_batch(self, candidates_batch):
         query = """
             INSERT INTO candidates
-            (course_name, year, classification, score, concurrence_type, period, enter_type, status, date)
+            (course_name, year, classification, score, concurrence_type, period, enter_type, status, date, exam_type)
             VALUES (%(course_name)s, %(year)s, %(classification)s, %(score)s, 
-                    %(concurrence_type)s, %(period)s, %(enter_type)s, %(status)s, %(date)s)
+                    %(concurrence_type)s, %(period)s, %(enter_type)s, %(status)s, %(date)s, %(exam_type)s)
         """
         try:
             self.cursor.executemany(query, candidates_batch)
