@@ -25,7 +25,8 @@ KEY_MAP = {
     'Período Vaga': 'period',
     'Vaga de Ingresso': 'enter_type',
     'Situação': 'status',
-    'Data Situação': 'date'
+    'Data Situação': 'date',
+    'Nr Inscrição': "candidate_serial"
 }
 
 db_service = DatabaseService()
@@ -117,7 +118,7 @@ def get_candidates_data(year, type , course_code):
         if tables:
             df = tables[0]
 
-            df.drop(['Nr Inscrição', 'Candidato'], axis=1, inplace=True)
+            df.drop(['Candidato'], axis=1, inplace=True)
             
             # date formating
             df.loc[:, 'Data Situação'] = (
@@ -126,7 +127,6 @@ def get_candidates_data(year, type , course_code):
                 .where(lambda x: x.notna(), None)
 
             )   
-
 
 
             return {
@@ -139,13 +139,17 @@ def get_candidates_data(year, type , course_code):
 
 if __name__ == "__main__":
     command = int(sys.argv[1])
-    if command: 
-        courses_data = [x for x in  get_courses_data()["data"] if x["year"] == command]
-    else: 
-        courses_data = get_courses_data()["data"]
+    course_filter = sys.argv[2]
+
+    courses_data = [
+        x for x in get_courses_data()["data"]
+        if (not command or x["year"] == command)
+        and (not course_filter or course_filter.lower() in x["course_name"].lower())
+    ]
 
     total_reqs = len(courses_data)
     req_count = 1
+
     for course_data in courses_data :
         type = types_dict[course_data['type']]
         year = course_data["year"]
