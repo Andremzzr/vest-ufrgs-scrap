@@ -38,7 +38,7 @@ class DatabaseService:
             created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
             updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
             CONSTRAINT candidates_pkey PRIMARY KEY (id),
-            CONSTRAINT candidate_course_year UNIQUE (classification, year, course_name);
+            CONSTRAINT candidate_course_year UNIQUE (classification, year, course_name)
         );
         """
         try: 
