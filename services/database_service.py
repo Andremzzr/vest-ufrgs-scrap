@@ -45,22 +45,9 @@ class DatabaseService:
             self.cursor.execute(query)
             self.connection.commit()
         except psycopg2.Error as e:
-            print(f"An error occurred: {e}")
+            print(f"An error occurred while creating table: {e}")
             self.connection.rollback()
             
-    def insert_candidates(self, values):
-        query = """
-            INSERT INTO candidates
-            (course_name, year, classification, score, concurrence_type, period, enter_type, status, date)
-            VALUES (%s, %s, %s, %s, %s, %s, %s)
-        """
-        try:
-            self.cursor.execute(query, values)
-            self.connection.commit()
-            print("Candidates inserted successfully.")
-        except psycopg2.Error as e:
-            print(f"An error occurred: {e}")
-            self.connection.rollback()
 
     def insert_batch(self, candidates_batch):
         query = """
