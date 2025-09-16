@@ -30,16 +30,16 @@ class DatabaseService:
             "year" int4 NULL,
             classification int4 NULL,
             score numeric(6, 2) NULL,
-            concurrence_type varchar(50) NULL,
+            concurrence_type varchar(100) NULL,
             "period" varchar(10) NULL,
-            enter_type varchar(50) NULL,
-            status varchar(50) NULL,
-            candidate_serial varchar(50) NOT NULL,
+            enter_type varchar(100) NULL,
+            status varchar(100) NULL,
+            name varchar(300) NOT NULL,
             "date" date NULL,
             created_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
             updated_at timestamp DEFAULT CURRENT_TIMESTAMP NULL,
             CONSTRAINT candidates_pkey PRIMARY KEY (id),
-            CONSTRAINT serial_exam_course_year UNIQUE (exam_type, candidate_serial, year, course_name)
+            CONSTRAINT candidate_type_year_course UNIQUE (exam_type, name, year, course_name)
         );
         """
         try: 
@@ -53,9 +53,9 @@ class DatabaseService:
     def insert_batch(self, candidates_batch):
         query = """
             INSERT INTO candidates
-            (course_name, year, classification, score, concurrence_type, period, enter_type, status, date, exam_type, candidate_serial)
+            (course_name, year, classification, score, concurrence_type, period, enter_type, status, date, exam_type, name)
             VALUES (%(course_name)s, %(year)s, %(classification)s, %(score)s, 
-                    %(concurrence_type)s, %(period)s, %(enter_type)s, %(status)s, %(date)s, %(exam_type)s,  %(candidate_serial)s)
+                    %(concurrence_type)s, %(period)s, %(enter_type)s, %(status)s, %(date)s, %(exam_type)s,  %(name)s)
         """
         try:
             self.cursor.executemany(query, candidates_batch)

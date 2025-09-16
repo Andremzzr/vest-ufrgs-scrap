@@ -26,7 +26,7 @@ KEY_MAP = {
     'Vaga de Ingresso': 'enter_type',
     'Situação': 'status',
     'Data Situação': 'date',
-    'Nr Inscrição': "candidate_serial"
+    'Candidato': "name"
 }
 
 db_service = DatabaseService()
@@ -42,7 +42,7 @@ def get_courses_from_html(url, form_data):
         select_element = soup.find(id="selectCurso")
 
         if not select_element: 
-            return
+            return {}
         
         for option in select_element.find_all("option"):
             value = option.get("value")
@@ -114,11 +114,14 @@ def get_candidates_data(year, type , course_code):
     response = get_data(url,form_data)
 
     if response:
-        tables = pd.read_html(StringIO(response.text))
+       
+        tables = pd.read_html(StringIO(response))
+        
+
         if tables:
             df = tables[0]
 
-            df.drop(['Candidato'], axis=1, inplace=True)
+            df.drop(['Nr Inscrição'], axis=1, inplace=True)
             
             # date formating
             df.loc[:, 'Data Situação'] = (
