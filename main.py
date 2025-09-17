@@ -23,7 +23,7 @@ KEY_MAP = {
     'Média': 'score',
     'Vaga(s) de Concorrência': 'concurrence_type',
     'Período Vaga': 'period',
-    'Vaga de Ingresso': 'enter_type',
+    'Vaga de Ingresso': 'entry_type',
     'Situação': 'status',
     'Data Situação': 'date',
     'Candidato': "name"

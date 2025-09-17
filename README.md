@@ -117,7 +117,7 @@ The scraper collects and normalizes the following candidate information:
 | Média | score | Average score |
 | Vaga(s) de Concorrência | concurrence_type | Competition type |
 | Período Vaga | period | Period/shift |
-| Vaga de Ingresso | enter_type | Entry type |
+| Vaga de Ingresso | entry_type | Entry type |
 | Situação | status | Current status |
 | Data Situação | date | Status date |
 | Candidato | name | Candidate name |

@@ -32,7 +32,7 @@ class DatabaseService:
             score numeric(6, 2) NULL,
             concurrence_type varchar(100) NULL,
             "period" varchar(10) NULL,
-            enter_type varchar(100) NULL,
+            entry_type varchar(100) NULL,
             status varchar(100) NULL,
             name varchar(300) NOT NULL,
             "date" date NULL,
@@ -53,9 +53,9 @@ class DatabaseService:
     def insert_batch(self, candidates_batch):
         query = """
             INSERT INTO candidates
-            (course_name, year, classification, score, concurrence_type, period, enter_type, status, date, exam_type, name)
+            (course_name, year, classification, score, concurrence_type, period, entry_type, status, date, exam_type, name)
             VALUES (%(course_name)s, %(year)s, %(classification)s, %(score)s, 
-                    %(concurrence_type)s, %(period)s, %(enter_type)s, %(status)s, %(date)s, %(exam_type)s,  %(name)s)
+                    %(concurrence_type)s, %(period)s, %(entry_type)s, %(status)s, %(date)s, %(exam_type)s,  %(name)s)
         """
         try:
             self.cursor.executemany(query, candidates_batch)
