@@ -141,12 +141,12 @@ def get_candidates_data(year, type , course_code):
     return {}
 
 if __name__ == "__main__":
-    command = int(sys.argv[1])
-    course_filter = sys.argv[2]
+    course_filter = sys.argv[1]
+    year_filter = sys.argv[2:]
 
     courses_data = [
         x for x in get_courses_data()["data"]
-        if (not command or x["year"] == command)
+        if (not year_filter or str(x["year"]) in year_filter)
         and (not course_filter or course_filter.lower() in x["course_name"].lower())
     ]
 
