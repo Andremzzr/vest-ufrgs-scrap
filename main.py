@@ -38,7 +38,7 @@ def get_courses_from_html(url, form_data):
     response = get_data(url, form_data)
 
     if response:
-        soup = BeautifulSoup(response.text, "html.parser")
+        soup = BeautifulSoup(response, "html.parser")
         select_element = soup.find(id="selectCurso")
 
         if not select_element: 
