@@ -31,8 +31,6 @@ KEY_MAP = {
 
 db_service = DatabaseService()
 
-
-
 def get_courses_from_html(url, form_data): 
     options_dict = {}
     response = get_data(url, form_data)
@@ -59,26 +57,30 @@ def save_courses_data():
     data = {'data': []}
 
     for year in years:
-        form_vest = {
-            "anoSelecao": year,
-            "sequenciaSelecao": VESTIBULAR,
-        }
 
+        if year != 2021: 
+            form_vest = {
+                "anoSelecao": year,
+                "sequenciaSelecao": VESTIBULAR,
+            }
+
+            vest_data = get_courses_from_html(url, form_vest)
+
+            for key in vest_data.keys():
+                data['data'].append({
+                    'year': year,
+                    'type': 'vest',
+                    'course_code': key,
+                    'course_name': vest_data[key] 
+            })
+            
         form_sisu = {
             "anoSelecao": year,
             "sequenciaSelecao": SISU,
         }
 
-        vest_data = get_courses_from_html(url, form_vest)
         sisu_data = get_courses_from_html(url, form_sisu)
 
-        for key in vest_data.keys():
-            data['data'].append({
-                'year': year,
-                'type': 'vest',
-                'course_code': key,
-                'course_name': vest_data[key] 
-            })
         
         for key in sisu_data.keys():
             data['data'].append({
@@ -158,8 +160,12 @@ if __name__ == "__main__":
         year = course_data["year"]
         course_name = course_data["course_name"]
 
-        
-        candidate_data = get_candidates_data(year, type, course_data['course_code'])
+        try: 
+            candidate_data = get_candidates_data(year, type, course_data['course_code'])
+        except Exception as e:
+            print(f"Error trying to fetch candidates data for {type}-{year}-{course_name}: {e}")
+            pass
+
         candidates_data_translated = translated = [
             {**{KEY_MAP.get(k, k): v for k, v in item.items()},
             "year": year,
