@@ -134,8 +134,11 @@ Additional fields added during processing:
 Create a `.env` file with the following variables:
 
 ```env
-DATABASE_URL=postgresql://user:password@host:port/database
-# Add other configuration as needed
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+DB_HOST=
+DB_PORT=
 ```
 
 ### Docker Compose
