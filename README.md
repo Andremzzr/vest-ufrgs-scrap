@@ -52,11 +52,7 @@ A Python-based web scraping tool that collects and processes admissions data fro
    ```
 
 3. **Configure environment variables**
-   Create a `.env` file with your database configuration:
-   ```env
-   DATABASE_URL=your_database_url_here
-   # Add other required environment variables
-   ```
+   Create a `.env` file with your database configurations
 
 ### Local Development
 
